@@ -9,17 +9,31 @@
     tools:context=".MainActivity">
 
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <TimePicker
-        android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:timePickerMode="spinner" />
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dropDownWidth="200dp"
+            android:entries="@array/요일"
+            android:spinnerMode="dropdown"></Spinner>
+
+        <TimePicker
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:timePickerMode="spinner" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/alarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Alarm"
+        android:text="추가"
         tools:layout_editor_absoluteX="159dp"
         tools:layout_editor_absoluteY="329dp" />
 </LinearLayout>
