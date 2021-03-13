@@ -17,17 +17,18 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    final String CHANNEL_ID = "ChannerID";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("박성규 맞춤 알람");
         Button alarm = findViewById(R.id.alarm);
 
         alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this)
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this,CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_launcher_background)
                         .setContentTitle("test")
                         .setContentText("alarm test")

@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
+    android:orientation="vertical"
     tools:context=".MainActivity">
+
+
+
+    <TimePicker
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:timePickerMode="spinner" />
 
     <Button
         android:id="@+id/alarm"
@@ -13,5 +22,4 @@
         android:text="Alarm"
         tools:layout_editor_absoluteX="159dp"
         tools:layout_editor_absoluteY="329dp" />
-
-</androidx.appcompat.widget.LinearLayoutCompat>
+</LinearLayout>
