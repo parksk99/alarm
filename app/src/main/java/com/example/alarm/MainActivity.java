@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
         alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar calendar = getTimePicker();
-                //alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), );
+                Calendar calendar = getTimePicker();    //timePicker로부터 시간을 가져오고 그 시간을 alarmManager에게 전달
+                //alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), ); //마지막 인자 : pendingIntent
                 sendNotification();
             }
         });
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             min = timePicker.getCurrentMinute();
         }
        // calendar.set()
-    return calendar;
+    return calendar;    //****calendar에 hour와 min을 저장해야
     }
 
     private NotificationCompat.Builder getNotificationBuilder(){
