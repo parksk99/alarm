@@ -51,8 +51,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setAlarm(Calendar calendar){
-        Toast toast = Toast.makeText(this, "hi", Toast.LENGTH_LONG);
-        toast.show();
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
         receiverIntent.putExtra("contentTitle", "contentTitle");
@@ -82,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
             min = timePicker.getCurrentMinute();
         }
        // calendar.set()
+        Toast toast = Toast.makeText(this, "설정 시간 : "+hour+"시 "+min+"분", Toast.LENGTH_LONG);
+        toast.show();
     return calendar;    //****calendar에 hour와 min을 저장해야
     }
 
