@@ -23,6 +23,7 @@
             android:spinnerMode="dropdown"></Spinner>
 
         <TimePicker
+            android:id="@+id/timePicker"
             android:layout_width="match_parent"
             android:layout_height="68dp"
             android:timePickerMode="spinner" />
