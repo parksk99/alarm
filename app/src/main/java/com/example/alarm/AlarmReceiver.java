@@ -17,8 +17,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
-        Toast toast = Toast.makeText(context, "hi2", Toast.LENGTH_LONG);
-        toast.show();
+//        Toast toast = Toast.makeText(context, "hi2", Toast.LENGTH_SHORT);
+//        toast.show();
         notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent notificationIntent = new Intent(context, MainActivity.class);
         PendingIntent notificationPendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);

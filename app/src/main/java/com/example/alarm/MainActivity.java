@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private NotificationManager notificationManager;
     private AlarmManager alarmManager;
     private TimePicker timePicker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +40,13 @@ public class MainActivity extends AppCompatActivity {
         timePicker.setIs24HourView(true);   //12시간 표기방법에서 24시간 표기방법으로 바꿈
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+        class AlarmRunable implements Runnable{
+
+            @Override
+            public void run() {
+                
+            }
+        }
         createNotificationChannel();
         alarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         receiverIntent.putExtra("contentText", "contentText");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, 0);
         try {
-            calendar.setTime(dateFormat.parse("2021-03-15 14:41:00"));
+            calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -69,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
     private Calendar getTimePicker(){
         Calendar calendar = Calendar.getInstance();
         int hour, min;
-
         //timePicker가 23버전부터 getHour를 사용하게 함
         //이전 버전과 호환을 위해 if로 구현
         if(Build.VERSION.SDK_INT >= 23){
@@ -81,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
             min = timePicker.getCurrentMinute();
         }
        // calendar.set()
-        Toast toast = Toast.makeText(this, "설정 시간 : "+hour+"시 "+min+"분", Toast.LENGTH_LONG);
-        toast.show();
+//        Toast toast = Toast.makeText(this, "설정 시간 : "+hour+"시 "+min+"분", Toast.LENGTH_SHORT);
+//        toast.show();
     return calendar;    //****calendar에 hour와 min을 저장해야
     }
 
