@@ -41,19 +41,33 @@ public class MainActivity extends AppCompatActivity {
 
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        class AlarmRunable implements Runnable {
+        class AlarmRunnable implements Runnable {
 
             @Override
             public void run() {
-
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+                receiverIntent.putExtra("contentTitle", "contentTitle");
+                receiverIntent.putExtra("contentText", "contentText");
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, 0);
+                try {
+                    calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
             }
         }
-        createNotificationChannel();
+        //createNotificationChannel();
         alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Calendar calendar = getTime();    //timePicker로부터 시간을 가져오고 그 시간을 alarmManager에게 전달
-                setAlarm(calendar);
+                AlarmRunnable ar = new AlarmRunnable();
+                Thread t = new Thread(ar);
+                t.start();
+//                setAlarm(calendar);
             }
         });
 
