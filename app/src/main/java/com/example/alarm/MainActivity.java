@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private NotificationManager notificationManager;
     private AlarmManager alarmManager;
     private TimePicker timePicker;
-    private int hour, min;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,21 +38,7 @@ public class MainActivity extends AppCompatActivity {
         Button alarm = findViewById(R.id.alarm);
         timePicker = findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);   //12시간 표기방법에서 24시간 표기방법으로 바꿈
-        if(Build.VERSION.SDK_INT >= 23){
-            hour = timePicker.getHour();
-            min = timePicker.getMinute();
-        }
-        else{
-            hour = timePicker.getCurrentHour();
-            min = timePicker.getCurrentMinute();
-        }
-        timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                hour = hourOfDay-1;
-                min = minute-1;
-            }
-        });
+
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         class AlarmRunable implements Runnable{
@@ -92,17 +77,17 @@ public class MainActivity extends AppCompatActivity {
     //timePicker에 저장된 시간을 가져옴
     private Calendar getTime(){
         Calendar calendar = Calendar.getInstance();
-//        int hour, min;
-        //timePicker가 23버전부터 getHour를 사용하게 함
-        //이전 버전과 호환을 위해 if로 구현
-//        if(Build.VERSION.SDK_INT >= 23){
-//            hour = timePicker.getHour();
-//            min = timePicker.getMinute();
-//        }
-//        else{
-//            hour = timePicker.getCurrentHour();
-//            min = timePicker.getCurrentMinute();
-//        }
+        int hour, min;
+//        timePicker가 23버전부터 getHour를 사용하게 함
+//        이전 버전과 호환을 위해 if로 구현
+        if(Build.VERSION.SDK_INT >= 23){
+            hour = timePicker.getHour();
+            min = timePicker.getMinute();
+        }
+        else{
+            hour = timePicker.getCurrentHour();
+            min = timePicker.getCurrentMinute();
+        }
        // calendar.set()
         Toast toast = Toast.makeText(this, "설정 시간 : "+hour+"시 "+min+"분", Toast.LENGTH_SHORT);
         toast.show();
