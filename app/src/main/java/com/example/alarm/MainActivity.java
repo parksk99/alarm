@@ -41,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
 
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        class AlarmRunable implements Runnable{
+        class AlarmRunable implements Runnable {
 
             @Override
             public void run() {
-                
+
             }
         }
         createNotificationChannel();
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void setAlarm(Calendar calendar){
+    private void setAlarm(Calendar calendar) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
@@ -68,33 +68,32 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, 0);
         try {
             calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
     }
 
     //timePicker에 저장된 시간을 가져옴
-    private Calendar getTime(){
+    private Calendar getTime() {
         Calendar calendar = Calendar.getInstance();
         int hour, min;
 //        timePicker가 23버전부터 getHour를 사용하게 함
 //        이전 버전과 호환을 위해 if로 구현
-        if(Build.VERSION.SDK_INT >= 23){
+        if (Build.VERSION.SDK_INT >= 23) {
             hour = timePicker.getHour();
             min = timePicker.getMinute();
-        }
-        else{
+        } else {
             hour = timePicker.getCurrentHour();
             min = timePicker.getCurrentMinute();
         }
-       // calendar.set()
-        Toast toast = Toast.makeText(this, "설정 시간 : "+hour+"시 "+min+"분", Toast.LENGTH_SHORT);
+        // calendar.set()
+        Toast toast = Toast.makeText(this, "설정 시간 : " + hour + "시 " + min + "분", Toast.LENGTH_SHORT);
         toast.show();
-    return calendar;    //****calendar에 hour와 min을 저장해야
+        return calendar;    //****calendar에 hour와 min을 저장해야
     }
 
-//    private NotificationCompat.Builder getNotificationBuilder(String contentTitle, String contentText){
+    //    private NotificationCompat.Builder getNotificationBuilder(String contentTitle, String contentText){
 //        Intent notificationIntent = new Intent(this, MainActivity.class);
 //        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 //        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this,CHANNEL_ID)
@@ -111,15 +110,15 @@ public class MainActivity extends AppCompatActivity {
 //        toast.show();
 //        notificationManager.notify(100, getNotificationBuilder("title", "text").build());
 //    }
-    private void createNotificationChannel(){
-        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                CharSequence name = getString(R.string.channel_name);
-                int importance = NotificationManager.IMPORTANCE_DEFAULT;
-                String description = getString(R.string.channel_description);
-                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-                channel.setDescription(description);
-                notificationManager.createNotificationChannel(channel);
-            }
+    private void createNotificationChannel() {
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            String description = getString(R.string.channel_description);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
