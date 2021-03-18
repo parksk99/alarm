@@ -82,14 +82,15 @@ public class MainActivity extends AppCompatActivity {
         Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
         receiverIntent.putExtra("contentTitle", calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분");
         receiverIntent.putExtra("contentText", content);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
+
 
 //        try {
 //            calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY*7, pendingIntent); //알림 반복 설정 : 세번째 인자가 반복 주기
     }
 
     //timePicker에 저장된 시간을 가져옴
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, min);
 
-        return calendar;    //****calendar에 hour와 min을 저장해야
+        return calendar;    //****calendar에 요일을 저장해야
     }
 
     //    private NotificationCompat.Builder getNotificationBuilder(String contentTitle, String contentText){
