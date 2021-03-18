@@ -114,37 +114,6 @@ public class MainActivity extends AppCompatActivity {
     return calendar;    //****calendar에 hour와 min을 저장해야
     }
 
-//    private NotificationCompat.Builder getNotificationBuilder(String contentTitle, String contentText){
-//        Intent notificationIntent = new Intent(this, MainActivity.class);
-//        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this,CHANNEL_ID)
-//                .setSmallIcon(R.drawable.ic_launcher_background)
-//                .setContentTitle(contentTitle)
-//                .setContentText(contentText)
-//                .setDefaults(NotificationCompat.PRIORITY_DEFAULT)
-//                .setContentIntent(notificationPendingIntent)
-//                .setAutoCancel(true);
-//        return builder;
-//    }
-//    private void sendNotification(){
-//        Toast toast = Toast.makeText(this, "hi", Toast.LENGTH_SHORT);
-//        toast.show();
-//        notificationManager.notify(100, getNotificationBuilder("title", "text").build());
-//    }
-
-
-
-//    private void createNotificationChannel(){
-//        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-//                CharSequence name = getString(R.string.channel_name);
-//                int importance = NotificationManager.IMPORTANCE_DEFAULT;
-//                String description = getString(R.string.channel_description);
-//                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-//                channel.setDescription(description);
-//                notificationManager.createNotificationChannel(channel);
-//            }
-//    }
 
 
 
