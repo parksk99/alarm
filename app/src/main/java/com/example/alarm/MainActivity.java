@@ -30,11 +30,22 @@ public class MainActivity extends AppCompatActivity {
     private AlarmManager alarmManager;
     private TimePicker timePicker;
     private EditText editText;
+    private Button delButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        delButton = findViewById(R.id.delete);
+        delButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //예약된 알림을 개대충 삭제함
+                //PedingIntent.getBroadcast의 두번째 인자가 중요함 마지막도 중요함 (알림 생성할때랑 똑같이 해야됨)
+                alarmManager.cancel(PendingIntent.getBroadcast(MainActivity.this, 0, new Intent(MainActivity.this, AlarmReceiver.class), PendingIntent.FLAG_UPDATE_CURRENT));
+            }
+        });
         setTitle("박성규 맞춤 알람");
         Button alarm = findViewById(R.id.alarm);
         timePicker = findViewById(R.id.timePicker);
@@ -90,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY*7, pendingIntent); //알림 반복 설정 : 세번째 인자가 반복 주기
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),1000*60/*AlarmManager.INTERVAL_DAY*7*/, pendingIntent); //알림 반복 설정 : 세번째 인자가 반복 주기
     }
 
     //timePicker에 저장된 시간을 가져옴

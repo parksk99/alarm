@@ -32,7 +32,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             channel.setDescription(description);
             notificationManager.createNotificationChannel(channel);
         }
-        notificationManager = (NotificationManager)context.getSystemService(NOTIFICATION_SERVICE);
         Intent notificationIntent = new Intent(context, MainActivity.class);
         PendingIntent notificationPendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder = new NotificationCompat.Builder(context,"")
@@ -43,5 +42,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentIntent(notificationPendingIntent)
                 .setAutoCancel(true);
         notificationManager.notify(100, builder.build());
+        //notificationManager.cancel(100);      //notify할때 지정한 id(100)에 해당하는 알림 삭제
     }
 }
