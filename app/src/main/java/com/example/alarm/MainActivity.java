@@ -51,12 +51,12 @@ public class MainActivity extends AppCompatActivity {
                 receiverIntent.putExtra("contentTitle", "contentTitle");
                 receiverIntent.putExtra("contentText", "contentText");
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, 0);
-                try {
-                    calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+//                try {
+//                    calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             }
         }
         //createNotificationChannel();
@@ -64,33 +64,37 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Calendar calendar = getTime();    //timePicker로부터 시간을 가져오고 그 시간을 alarmManager에게 전달
-                AlarmRunnable ar = new AlarmRunnable();
-                Thread t = new Thread(ar);
-                t.start();
-//                setAlarm(calendar);
+//                AlarmRunnable ar = new AlarmRunnable();
+//                Thread t = new Thread(ar);
+//                t.start();
+                setAlarm(calendar);
             }
         });
 
     }
 
     private void setAlarm(Calendar calendar) {
+        Toast toast = Toast.makeText(this, "설정 시간 : " + calendar.getTime(), Toast.LENGTH_SHORT);
+        toast.show();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
         receiverIntent.putExtra("contentTitle", "contentTitle");
         receiverIntent.putExtra("contentText", "contentText");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, 0);
-        try {
-            calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+//        try {
+//            calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     //timePicker에 저장된 시간을 가져옴
     private Calendar getTime() {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
         int hour, min;
 //        timePicker가 23버전부터 getHour를 사용하게 함
 //        이전 버전과 호환을 위해 if로 구현
@@ -101,9 +105,9 @@ public class MainActivity extends AppCompatActivity {
             hour = timePicker.getCurrentHour();
             min = timePicker.getCurrentMinute();
         }
-        // calendar.set()
-        Toast toast = Toast.makeText(this, "설정 시간 : " + hour + "시 " + min + "분", Toast.LENGTH_SHORT);
-        toast.show();
+         calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, min);
+
         return calendar;    //****calendar에 hour와 min을 저장해야
     }
 
