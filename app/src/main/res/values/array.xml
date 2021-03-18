@@ -4,14 +4,14 @@
 <resources>
 
 <string-array name="요일">
-    <item>요일 선택</item>
-<item>월요일</item>
+    <item>일요일</item>
+    <item>월요일</item>
     <item>화요일</item>
     <item>수요일</item>
     <item>목요일</item>
     <item>금요일</item>
     <item>토요일</item>
-    <item>일요일</item>
+
 
 </string-array>
 </resources>

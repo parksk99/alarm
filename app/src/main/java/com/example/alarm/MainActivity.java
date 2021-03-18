@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private NotificationManager notificationManager;
     private AlarmManager alarmManager;
     private TimePicker timePicker;
-
+    private EditText editText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         Button alarm = findViewById(R.id.alarm);
         timePicker = findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);   //12시간 표기방법에서 24시간 표기방법으로 바꿈
-
+        editText = findViewById(R.id.editText);
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         class AlarmRunnable implements Runnable {
@@ -46,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
                 receiverIntent.putExtra("contentTitle", "contentTitle");
-                receiverIntent.putExtra("contentText", "contentText");
+                receiverIntent.putExtra("contentText", "aa");
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, 0);
 //                try {
 //                    calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
@@ -74,14 +75,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setAlarm(Calendar calendar) {
-        Toast toast = Toast.makeText(this, "설정 시간 : " + calendar.getTime(), Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(this, "설정 시간 : " + calendar.getTime() + editText.getText().toString(), Toast.LENGTH_SHORT);
         toast.show();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String content = editText.getText().toString();
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
-        receiverIntent.putExtra("contentTitle", "contentTitle");
-        receiverIntent.putExtra("contentText", "contentText");
+        receiverIntent.putExtra("contentTitle", calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분");
+        receiverIntent.putExtra("contentText", content);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, 0);
+
 //        try {
 //            calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
 //        } catch (Exception e) {
@@ -105,7 +107,8 @@ public class MainActivity extends AppCompatActivity {
             hour = timePicker.getCurrentHour();
             min = timePicker.getCurrentMinute();
         }
-         calendar.set(Calendar.HOUR_OF_DAY, hour);
+//        calendar.set(Calendar.DAY_OF_WEEK, 2);
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, min);
 
         return calendar;    //****calendar에 hour와 min을 저장해야

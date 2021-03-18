@@ -21,8 +21,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
-        Toast toast = Toast.makeText(context, "hi2", Toast.LENGTH_SHORT);
-        toast.show();notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+//        Toast toast = Toast.makeText(context, intent.getExtras().getString("contentText"), Toast.LENGTH_SHORT);
+//        toast.show();
+        notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = context.getString(R.string.channel_name);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -36,8 +37,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent notificationPendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder = new NotificationCompat.Builder(context,"")
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle(intent.getStringExtra("contentTitle"))
-                .setContentText(intent.getStringExtra("contentText"))
+                .setContentTitle(intent.getExtras().getString("contentTitle"))
+                .setContentText(intent.getExtras().getString("contentText"))
                 .setDefaults(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(notificationPendingIntent)
                 .setAutoCancel(true);
