@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 getDayOfWeek =i;
             System.out.println(items[i]);
         }
+        getDayOfWeek += 1;
         calendar.set(Calendar.DAY_OF_WEEK,getDayOfWeek);
      System.out.println(getDayOfWeek);
 

@@ -25,7 +25,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         System.out.println("dayof"+intent.getIntExtra("dayOfWeek",8));
         System.out.println( "현재 요일"+(calendar.get(Calendar.DAY_OF_WEEK)-1));
-        if (intent.getIntExtra("dayOfWeek", 8) == calendar.get(Calendar.DAY_OF_WEEK)-1) {
 
             // TODO: This method is called when the BroadcastReceiver is receiving
             // an Intent broadcast.
@@ -51,7 +50,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     .setAutoCancel(true);
             notificationManager.notify(100, builder.build());
             //notificationManager.cancel(100);      //notify할때 지정한 id(100)에 해당하는 알림 삭제
-        }
+
     }
 
 }
