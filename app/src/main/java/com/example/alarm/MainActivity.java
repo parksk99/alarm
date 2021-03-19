@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
 //        calendar.set(Calendar.DAY_OF_WEEK, 2);
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, min);
+        calendar.set(Calendar.SECOND, 0);
 
         return calendar;    //****calendar에 요일을 저장해야
     }
