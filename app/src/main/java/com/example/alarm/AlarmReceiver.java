@@ -21,15 +21,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Calendar calendar = Calendar.getInstance();
-
-        System.out.println("dayof"+intent.getIntExtra("dayOfWeek",8));
-        System.out.println( "현재 요일"+(calendar.get(Calendar.DAY_OF_WEEK)-1));
-
-            // TODO: This method is called when the BroadcastReceiver is receiving
-            // an Intent broadcast.
-//        Toast toast = Toast.makeText(context, intent.getExtras().getString("contentText"), Toast.LENGTH_SHORT);
-//        toast.show();
             notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 CharSequence name = context.getString(R.string.channel_name);
