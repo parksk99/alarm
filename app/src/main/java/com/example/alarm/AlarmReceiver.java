@@ -22,24 +22,26 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
             notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+            String channelID = intent.getStringExtra("contentTitle") + intent.getStringExtra("contentText");
+            int requestCode = intent.getIntExtra("time", 0) + intent.getStringExtra("contentText").hashCode();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 CharSequence name = context.getString(R.string.channel_name);
-                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                int importance = NotificationManager.IMPORTANCE_HIGH;
                 String description = context.getString(R.string.channel_description);
-                NotificationChannel channel = new NotificationChannel("", name, importance);
+                NotificationChannel channel = new NotificationChannel(channelID, name, importance);
                 channel.setDescription(description);
                 notificationManager.createNotificationChannel(channel);
             }
             Intent notificationIntent = new Intent(context, MainActivity.class);
-            PendingIntent notificationPendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            builder = new NotificationCompat.Builder(context, "")
+//            PendingIntent notificationPendingIntent = PendingIntent.getActivity(context, requestCode, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
+            builder = new NotificationCompat.Builder(context, channelID)
                     .setSmallIcon(R.drawable.ic_launcher_background)
                     .setContentTitle(intent.getExtras().getString("contentTitle"))
                     .setContentText(intent.getExtras().getString("contentText"))
-                    .setDefaults(NotificationCompat.PRIORITY_DEFAULT)
-                    .setContentIntent(notificationPendingIntent)
+                    .setDefaults(NotificationCompat.PRIORITY_HIGH)
+//                    .setContentIntent(notificationPendingIntent)
                     .setAutoCancel(true);
-            notificationManager.notify(100, builder.build());
+            notificationManager.notify(requestCode, builder.build());
             //notificationManager.cancel(100);      //notify할때 지정한 id(100)에 해당하는 알림 삭제
 
     }

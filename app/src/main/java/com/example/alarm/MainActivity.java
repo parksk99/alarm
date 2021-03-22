@@ -22,10 +22,13 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ArrayList<String> channelID;        //channelId는 설정시간 + 할일 {(calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분") + (content)} 로 통일
+    private ArrayList<Integer> requestCode;     //requestCode는 설정시간+할일 {(int)calendar.getTimeInMillis()+content.hashCode()} 로 통일
     private NotificationManager notificationManager;
     private AlarmManager alarmManager;
     private TimePicker timePicker;
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        channelID = new ArrayList<String>();
+        requestCode = new ArrayList<Integer>();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         delButton = findViewById(R.id.delete);
         delButton.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +51,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //예약된 알림을 개대충 삭제함
                 //PedingIntent.getBroadcast의 두번째 인자가 중요함 마지막도 중요함 (알림 생성할때랑 똑같이 해야됨)
-                alarmManager.cancel(PendingIntent.getBroadcast(MainActivity.this, 0, new Intent(MainActivity.this, AlarmReceiver.class), PendingIntent.FLAG_UPDATE_CURRENT));
+//                alarmManager.cancel(PendingIntent.getBroadcast(MainActivity.this, 0, new Intent(MainActivity.this, AlarmReceiver.class), PendingIntent.FLAG_UPDATE_CURRENT));
+                Intent manageIntent = new Intent(MainActivity.this, ManageActivity.class);
+                manageIntent.putExtra("channelID",channelID);
+                manageIntent.putExtra("requestCode",requestCode);
+                startActivity(manageIntent);
             }
         });
         setTitle("박성규 맞춤 알람");
@@ -61,18 +70,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //            @Override
 //            public void run() {
-//                Calendar calendar = Calendar.getInstance();
-////                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
-//                receiverIntent.putExtra("contentTitle", "contentTitle");
-//                receiverIntent.putExtra("contentText", "aa");
-//                PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, 0);
-////                try {
-////                    calendar.setTime(dateFormat.parse("2021-03-16 11:25:00"));
-////                } catch (Exception e) {
-////                    e.printStackTrace();
-////                }
-//                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+//                setAlarm(getTime());
 //            }
 //        }
         alarm.setOnClickListener(new View.OnClickListener() {
@@ -89,15 +87,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setAlarm(Calendar calendar) {
+
+        String contentTitle = calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분";
         String content = editText.getText().toString();
         Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
-
-        receiverIntent.putExtra("contentTitle", calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분");
+        channelID.add(contentTitle+content);
+        requestCode.add((int)calendar.getTimeInMillis()+content.hashCode());
+        receiverIntent.putExtra("contentTitle", contentTitle);
         receiverIntent.putExtra("contentText", content);
+        receiverIntent.putExtra("time",(int)calendar.getTimeInMillis());
         receiverIntent.putExtra("dayOfWeek", calendar.get(Calendar.DAY_OF_WEEK));
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
-
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),1000*60/*AlarmManager.INTERVAL_DAY*7*/, pendingIntent); //알림 반복 설정 : 세번째 인자가 반복 주기
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, requestCode.get(requestCode.size()-1), receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
+        Toast toast = Toast.makeText(this, requestCode.get(requestCode.size()-1)+" ", Toast.LENGTH_SHORT);
+        toast.show();
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),1000*60*10/*AlarmManager.INTERVAL_DAY*7*/, pendingIntent); //알림 반복 설정 : 세번째 인자가 반복 주기
     }
 
     //timePicker에 저장된 시간을 가져옴
