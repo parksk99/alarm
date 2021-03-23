@@ -5,9 +5,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/secwc_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/secwc_logo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alarm">
         <activity android:name=".ManageActivity"></activity>

@@ -35,7 +35,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             Intent notificationIntent = new Intent(context, MainActivity.class);
 //            PendingIntent notificationPendingIntent = PendingIntent.getActivity(context, requestCode, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
             builder = new NotificationCompat.Builder(context, channelID)
-                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setSmallIcon(R.drawable.ic_tmp_noti_icon)
                     .setContentTitle(intent.getExtras().getString("contentTitle"))
                     .setContentText(intent.getExtras().getString("contentText"))
                     .setDefaults(NotificationCompat.PRIORITY_HIGH)
