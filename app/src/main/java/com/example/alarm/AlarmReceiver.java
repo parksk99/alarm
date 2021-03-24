@@ -16,12 +16,10 @@ import java.util.Calendar;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class AlarmReceiver extends BroadcastReceiver {
-    private NotificationManager notificationManager;
-    private NotificationCompat.Builder builder;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-            notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
             String channelID = intent.getStringExtra("contentTitle") + intent.getStringExtra("contentText");
             int requestCode = intent.getIntExtra("time", 0) + intent.getStringExtra("contentText").hashCode();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -34,13 +32,14 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
             Intent notificationIntent = new Intent(context, MainActivity.class);
 //            PendingIntent notificationPendingIntent = PendingIntent.getActivity(context, requestCode, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
-            builder = new NotificationCompat.Builder(context, channelID)
-                    .setSmallIcon(R.drawable.ic_tmp_noti_icon)
-                    .setContentTitle(intent.getExtras().getString("contentTitle"))
-                    .setContentText(intent.getExtras().getString("contentText"))
-                    .setDefaults(NotificationCompat.PRIORITY_HIGH)
+        //                    .setContentIntent(notificationPendingIntent)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelID)
+                .setSmallIcon(R.drawable.ic_tmp_noti_icon)
+                .setContentTitle(intent.getExtras().getString("contentTitle"))
+                .setContentText(intent.getExtras().getString("contentText"))
+                .setDefaults(NotificationCompat.PRIORITY_HIGH)
 //                    .setContentIntent(notificationPendingIntent)
-                    .setAutoCancel(true);
+                .setAutoCancel(true);
             notificationManager.notify(requestCode, builder.build());
             //notificationManager.cancel(100);      //notify할때 지정한 id(100)에 해당하는 알림 삭제
 

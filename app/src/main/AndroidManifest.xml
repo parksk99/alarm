@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/secwc_logo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alarm">
-        <activity android:name=".ManageActivity"></activity>
+        <activity android:name=".ManageActivity" />
 
         <receiver
             android:name=".AlarmReceiver"

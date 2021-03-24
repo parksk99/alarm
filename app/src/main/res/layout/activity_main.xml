@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:dropDownWidth="200dp"
             android:entries="@array/요일"
-            android:spinnerMode="dropdown"></Spinner>
+            android:spinnerMode="dropdown"/>
 
         <TimePicker
             android:id="@+id/timePicker"

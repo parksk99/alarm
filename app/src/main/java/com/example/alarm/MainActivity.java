@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private Button delButton;
     private Spinner spinner;
     String[] items = {"일요일","월요일", "화요일", "수요일", "목요일", "금요일", "토요일"};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
