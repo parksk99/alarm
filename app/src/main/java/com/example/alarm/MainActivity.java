@@ -21,15 +21,23 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<String> channelID;        //channelId는 설정시간 + 할일 {(calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분") + (content)} 로 통일
-    private ArrayList<Integer> requestCode;     //requestCode는 설정시간+할일 {(int)calendar.getTimeInMillis()+content.hashCode()} 로 통일
+//    private ArrayList<String> channelID;        //channelId는 설정시간 + 할일 {(calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분") + (content)} 로 통일
+//    private ArrayList<Integer> requestCode;     //requestCode는 설정시간+할일 {(int)calendar.getTimeInMillis()+content.hashCode()} 로 통일
     private NotificationManager notificationManager;
+    private FileOutputStream channelIdFOS;
+    private FileOutputStream requestCodeFOS;
+    private FileInputStream channelIdFIS;
+    private FileInputStream requestCodeFIS;
     private AlarmManager alarmManager;
     private TimePicker timePicker;
     private EditText editText;
@@ -41,8 +49,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        channelID = new ArrayList<String>();
-        requestCode = new ArrayList<Integer>();
+        openWriteFile();
+//        channelID = new ArrayList<String>();
+//        requestCode = new ArrayList<Integer>();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         delButton = findViewById(R.id.delete);
         delButton.setOnClickListener(new View.OnClickListener() {
@@ -52,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
                 //PedingIntent.getBroadcast의 두번째 인자가 중요함 마지막도 중요함 (알림 생성할때랑 똑같이 해야됨)
 //                alarmManager.cancel(PendingIntent.getBroadcast(MainActivity.this, 0, new Intent(MainActivity.this, AlarmReceiver.class), PendingIntent.FLAG_UPDATE_CURRENT));
                 Intent manageIntent = new Intent(MainActivity.this, ManageActivity.class);
-                manageIntent.putExtra("channelID",channelID);
-                manageIntent.putExtra("requestCode",requestCode);
+//                manageIntent.putExtra("channelID",channelID);
+//                manageIntent.putExtra("requestCode",requestCode);
                 startActivity(manageIntent);
             }
         });
@@ -84,24 +93,74 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
+    private void openWriteFile(){
+        try {
+            channelIdFOS = openFileOutput(getString(R.string.channel_id_file), Context.MODE_APPEND);
+            requestCodeFOS = openFileOutput(getString(R.string.request_code_file), Context.MODE_APPEND);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     private void setAlarm(Calendar calendar) {
 
         String contentTitle = calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분";
         String content = editText.getText().toString();
         Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
-        channelID.add(contentTitle+content);
-        requestCode.add((int)calendar.getTimeInMillis()+content.hashCode());
+//        channelID.add(contentTitle+content);
+        writeIdFile(contentTitle+content);
+//        requestCode.add((int)calendar.getTimeInMillis()+content.hashCode());
+        writeRequestCodeFile((int)calendar.getTimeInMillis()+content.hashCode());
         receiverIntent.putExtra("contentTitle", contentTitle);
         receiverIntent.putExtra("contentText", content);
         receiverIntent.putExtra("time",(int)calendar.getTimeInMillis());
         receiverIntent.putExtra("dayOfWeek", calendar.get(Calendar.DAY_OF_WEEK));
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, requestCode.get(requestCode.size()-1), receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
-        Toast toast = Toast.makeText(this, requestCode.get(requestCode.size()-1)+" ", Toast.LENGTH_SHORT);
-        toast.show();
+        int notiSize = getNotiSize();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, readRequestCodeFile(notiSize), receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),1000*60*10/*AlarmManager.INTERVAL_DAY*7*/, pendingIntent); //알림 반복 설정 : 세번째 인자가 반복 주기
     }
+    private int getNotiSize(){
+        int i=0;
+        try {
+            BufferedReader buffer = new BufferedReader(new FileReader(getString(R.string.request_code_file)));
+            while((buffer.readLine())!=null){
+                i++;
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        return i;
+    }
+    private void writeIdFile(String text){
+        try {
+            channelIdFOS.write((text+"\n").getBytes());
+//            channelIdFOS.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
+    private void writeRequestCodeFile(Integer text){
+        try{
+            String str = text.toString() + "\n";
+            requestCodeFOS.write(str.getBytes());
+//            requestCodeFOS.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private int readRequestCodeFile(int index){
+        String line = null;
+        try {
+            BufferedReader buffer = new BufferedReader(new FileReader(getString(R.string.request_code_file)));
+            for (int i = 0; i <= index; i++) {
+                line = buffer.readLine();
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return Integer.parseInt(line);
+    }
     //timePicker에 저장된 시간을 가져옴
     private Calendar getTime() {
         Calendar calendar = Calendar.getInstance();
@@ -133,6 +192,4 @@ public class MainActivity extends AppCompatActivity {
 
         return calendar;
     }
-
-
 }
