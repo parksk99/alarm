@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.widget.Toast;
 
@@ -16,9 +17,9 @@ import java.util.Calendar;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class AlarmReceiver extends BroadcastReceiver {
-
     @Override
     public void onReceive(Context context, Intent intent) {
+
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
             String channelID = intent.getStringExtra("contentTitle") + intent.getStringExtra("contentText");
             int requestCode = intent.getIntExtra("time", 0) + intent.getStringExtra("contentText").hashCode();

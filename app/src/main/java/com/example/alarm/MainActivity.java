@@ -12,6 +12,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -33,11 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
 //    private ArrayList<String> channelID;        //channelId는 설정시간 + 할일 {(calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분") + (content)} 로 통일
 //    private ArrayList<Integer> requestCode;     //requestCode는 설정시간+할일 {(int)calendar.getTimeInMillis()+content.hashCode()} 로 통일
+    private ContactDBHelper dbHelper;
     private NotificationManager notificationManager;
-    private FileOutputStream channelIdFOS;
-    private FileOutputStream requestCodeFOS;
-    private FileInputStream channelIdFIS;
-    private FileInputStream requestCodeFIS;
     private AlarmManager alarmManager;
     private TimePicker timePicker;
     private EditText editText;
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        openWriteFile();
+        initDatabase();
 //        channelID = new ArrayList<String>();
 //        requestCode = new ArrayList<Integer>();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -93,73 +91,32 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-    private void openWriteFile(){
-        try {
-            channelIdFOS = openFileOutput(getString(R.string.channel_id_file), Context.MODE_APPEND);
-            requestCodeFOS = openFileOutput(getString(R.string.request_code_file), Context.MODE_APPEND);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    private void initDatabase(){
+        dbHelper = new ContactDBHelper(this);
+    }
+    private void insertDatabase(String contentTitle, String content, int time){
+        SQLiteDatabase alarmList = dbHelper.getReadableDatabase();
+        //('CONTENT_TITLE', 'CONTENT', TIME')
+        String sqlInsert = ContactDBCtrict.SQL_INSERT+"("+"'"+contentTitle+"', '"+content+"', "+time+")";
+        alarmList.execSQL(sqlInsert);
     }
     private void setAlarm(Calendar calendar) {
 
         String contentTitle = calendar.get(Calendar.HOUR)+"시 "+calendar.get(Calendar.MINUTE)+"분";
         String content = editText.getText().toString();
+        int time = (int)calendar.getTimeInMillis();
         Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
 //        channelID.add(contentTitle+content);
-        writeIdFile(contentTitle+content);
+        //writeIdFile(contentTitle+content);
 //        requestCode.add((int)calendar.getTimeInMillis()+content.hashCode());
-        writeRequestCodeFile((int)calendar.getTimeInMillis()+content.hashCode());
+        //writeRequestCodeFile((int)calendar.getTimeInMillis()+content.hashCode());
+        insertDatabase(contentTitle, content, time);
         receiverIntent.putExtra("contentTitle", contentTitle);
         receiverIntent.putExtra("contentText", content);
         receiverIntent.putExtra("time",(int)calendar.getTimeInMillis());
         receiverIntent.putExtra("dayOfWeek", calendar.get(Calendar.DAY_OF_WEEK));
-        int notiSize = getNotiSize();
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, readRequestCodeFile(notiSize), receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, time+content.hashCode(), receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),1000*60*10/*AlarmManager.INTERVAL_DAY*7*/, pendingIntent); //알림 반복 설정 : 세번째 인자가 반복 주기
-    }
-    private int getNotiSize(){
-        int i=0;
-        try {
-            BufferedReader buffer = new BufferedReader(new FileReader(getString(R.string.request_code_file)));
-            while((buffer.readLine())!=null){
-                i++;
-            }
-        }catch(Exception e) {
-            e.printStackTrace();
-        }
-        return i;
-    }
-    private void writeIdFile(String text){
-        try {
-            channelIdFOS.write((text+"\n").getBytes());
-//            channelIdFOS.close();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    private void writeRequestCodeFile(Integer text){
-        try{
-            String str = text.toString() + "\n";
-            requestCodeFOS.write(str.getBytes());
-//            requestCodeFOS.close();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    private int readRequestCodeFile(int index){
-        String line = null;
-        try {
-            BufferedReader buffer = new BufferedReader(new FileReader(getString(R.string.request_code_file)));
-            for (int i = 0; i <= index; i++) {
-                line = buffer.readLine();
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return Integer.parseInt(line);
     }
     //timePicker에 저장된 시간을 가져옴
     private Calendar getTime() {
