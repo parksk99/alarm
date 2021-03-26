@@ -8,17 +8,20 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class ManageActivity extends AppCompatActivity {
     Button button;
     ContactDBHelper dbHelper;
-    TextView textView;
+    ArrayList<TextView> textViewArrayList;
+//    TextView textView;
     LinearLayout linearLayout;
     SQLiteDatabase alarmDatabase;
     @Override
@@ -28,24 +31,38 @@ public class ManageActivity extends AppCompatActivity {
         linearLayout = (LinearLayout)findViewById(R.id.manage_layout);
 
         alarmDatabase = this.openOrCreateDatabase("contact.db", MODE_PRIVATE, null);
-        textView = setTextView();
+        textViewArrayList = setTextView();
         dbHelper = new ContactDBHelper(this);
         button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cancel(textView.getText().toString());
+                //일단 0번째 알람 삭제
+                if(textViewArrayList.size()==0) {
+                    Toast toast = Toast.makeText(ManageActivity.this, "There is no alarm", Toast.LENGTH_SHORT);
+                    toast.show();
+                    return;
+                }
+                else{
+                    cancel(textViewArrayList.get(0).getText().toString());
+                }
+
             }
         });
     }
 
     //알람을 삭제
     private void cancel(String key){
+
         Intent intent = new Intent(ManageActivity.this, AlarmReceiver.class);
         AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
         int requestCode = getRequestCode(key);
         am.cancel(PendingIntent.getBroadcast(ManageActivity.this, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT));
-        alarmDatabase.execSQL(ContactDBCtrict.SQL_DELETE+" WHERE "+ContactDBCtrict.COL_CONTENT_TITLE+" = '"+textView.getText().toString()+"'");
+
+        //일단 0번째 지움
+       alarmDatabase.execSQL(ContactDBCtrict.SQL_DELETE+" WHERE "+ContactDBCtrict.COL_CONTENT_TITLE+" = '"+textViewArrayList.get(0).getText().toString()+"'");
+       linearLayout.removeView(textViewArrayList.get(0));
+       textViewArrayList.remove(0);
     }
 
     //database를 읽어옴
@@ -53,21 +70,46 @@ public class ManageActivity extends AppCompatActivity {
         return alarmDatabase.rawQuery(ContactDBCtrict.SQL_SELECT, null);
     }
 
+    private int getCount(){
+        Cursor c = getCursor();
+        int i = c.getCount();
+        c.close();
+        return i;
+    }
+
     //textView에 db내용을 표시함
-    private TextView setTextView(){
-        TextView tmpTextView = new TextView(this);;
+    private ArrayList<TextView> setTextView(){
+//        TextView tmpTextView = new TextView(this);
+//        Cursor cursor = getCursor();
+//        if(cursor.moveToNext()) {
+//            tmpTextView.setText(cursor.getString(0));
+//            cursor.close();
+//        }
+//        else{
+//            tmpTextView.setText("There is no alarm");
+//        }
+//        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//        tmpTextView.setLayoutParams(parms);
+//        linearLayout.addView(tmpTextView);
+//        return tmpTextView;
+        textViewArrayList = new ArrayList<>();
+        int count = getCount();
         Cursor cursor = getCursor();
-        if(cursor.moveToNext()) {
-            tmpTextView.setText(cursor.getString(0));
-            cursor.close();
-        }
-        else{
-            tmpTextView.setText("there is no alarm");
-        }
+        for(int i=0; i<count; i++){
+            textViewArrayList.add(new TextView(this));
+            if(cursor.moveToNext()){
+                textViewArrayList.get(i).setText(cursor.getString(0)/* + "\n"+cursor.getString(1)*/);
+//                textViewArrayList.get(i).setText("\n"+cursor.getString(1));
+            }
+            else{
+                textViewArrayList.get(i).setText("There is no alarm");
+                return null;
+            }
         LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        tmpTextView.setLayoutParams(parms);
-        linearLayout.addView(tmpTextView);
-        return tmpTextView;
+        textViewArrayList.get(i).setLayoutParams(parms);
+        linearLayout.addView(textViewArrayList.get(i));
+        }
+        return textViewArrayList;
     }
 
     //db에서 원하는 time과 content를 가져와서 requestCode를 조합함
