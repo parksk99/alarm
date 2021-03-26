@@ -31,17 +31,17 @@ public class AlarmReceiver extends BroadcastReceiver {
                 channel.setDescription(description);
                 notificationManager.createNotificationChannel(channel);
             }
-            Intent notificationIntent = new Intent(context, MainActivity.class);
-//            PendingIntent notificationPendingIntent = PendingIntent.getActivity(context, requestCode, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
-        //                    .setContentIntent(notificationPendingIntent)
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+        PendingIntent notificationPendingIntent = PendingIntent.getActivity(context, requestCode, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelID)
                 .setSmallIcon(R.drawable.ic_tmp_noti_icon)
                 .setContentTitle(intent.getExtras().getString("contentTitle"))
                 .setContentText(intent.getExtras().getString("contentText"))
                 .setDefaults(NotificationCompat.PRIORITY_HIGH)
-//                    .setContentIntent(notificationPendingIntent)
+                .setContentIntent(notificationPendingIntent)
                 .setAutoCancel(true);
-            notificationManager.notify(requestCode, builder.build());
+        notificationManager.notify(requestCode, builder.build());
             //notificationManager.cancel(100);      //notify할때 지정한 id(100)에 해당하는 알림 삭제
 
     }

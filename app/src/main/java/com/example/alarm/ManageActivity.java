@@ -34,18 +34,26 @@ public class ManageActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ManageActivity.this, AlarmReceiver.class);
-                AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
-                int requestCode = getRequestCode(textView.getText().toString());
-                am.cancel(PendingIntent.getBroadcast(ManageActivity.this, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT));
-                //arrayList의 0번째 요소도 지워야 하는데 여기서 지우면 원래 있던 애도 지워지나?
-                alarmDatabase.execSQL(ContactDBCtrict.SQL_DELETE+" WHERE "+ContactDBCtrict.COL_CONTENT_TITLE+" = '"+textView.getText().toString()+"'");
+                cancel(textView.getText().toString());
             }
         });
     }
+
+    //알람을 삭제
+    private void cancel(String key){
+        Intent intent = new Intent(ManageActivity.this, AlarmReceiver.class);
+        AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
+        int requestCode = getRequestCode(key);
+        am.cancel(PendingIntent.getBroadcast(ManageActivity.this, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+        alarmDatabase.execSQL(ContactDBCtrict.SQL_DELETE+" WHERE "+ContactDBCtrict.COL_CONTENT_TITLE+" = '"+textView.getText().toString()+"'");
+    }
+
+    //database를 읽어옴
     private Cursor getCursor(){
         return alarmDatabase.rawQuery(ContactDBCtrict.SQL_SELECT, null);
     }
+
+    //textView에 db내용을 표시함
     private TextView setTextView(){
         TextView tmpTextView = new TextView(this);;
         Cursor cursor = getCursor();
@@ -61,6 +69,8 @@ public class ManageActivity extends AppCompatActivity {
         linearLayout.addView(tmpTextView);
         return tmpTextView;
     }
+
+    //db에서 원하는 time과 content를 가져와서 requestCode를 조합함
     private int getRequestCode(String contentTitle){
         // + " WHERE " + COL_CONTENT_TITLE + " = ";
         int tmp = -1;

@@ -44,6 +44,6 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/delete"
+        android:id="@+id/manageButton"
         android:text="관리"/>
 </LinearLayout>
