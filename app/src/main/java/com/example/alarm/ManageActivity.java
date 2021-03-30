@@ -69,7 +69,18 @@ public class ManageActivity extends AppCompatActivity{
 
        textViewArrayList.remove(index);
        buttonList.remove(index);
+       setTag();
        linearLayoutList.remove(index);
+    }
+
+    //지울때 index는 arrayList에서 자동으로 맞춰주는데
+    //View의 tag는 공백이 생김
+    //그래서 지울때마다 tag를 재설정 해줘야함
+    //hash map으로 했어야 index를 찾을 필요가 없어서 더 나았을거같
+    private void setTag(){
+        for(int i=0; i<buttonList.size(); i++){
+            buttonList.get(i).setTag(i);
+        }
     }
 
     //database를 읽어옴
