@@ -67,21 +67,21 @@ public class MainActivity extends AppCompatActivity {
         editText = findViewById(R.id.editText);
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-//        class AlarmRunnable implements Runnable {
-//
-//            @Override
-//            public void run() {
-//                setAlarm(getTime());
-//            }
-//        }
+        class AlarmRunnable implements Runnable {
+
+            @Override
+            public void run() {
+                setAlarm(getTime());
+            }
+        }
         alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar calendar = getTime();    //timePicker로부터 시간을 가져오고 그 시간을 alarmManager에게 전달
-//                AlarmRunnable ar = new AlarmRunnable();
-//                Thread t = new Thread(ar);
-//                t.start();
-                setAlarm(calendar);
+//                Calendar calendar = getTime();    //timePicker로부터 시간을 가져오고 그 시간을 alarmManager에게 전달
+                AlarmRunnable ar = new AlarmRunnable();
+                Thread t = new Thread(ar);
+                t.start();
+//                setAlarm(calendar);
             }
         });
 
