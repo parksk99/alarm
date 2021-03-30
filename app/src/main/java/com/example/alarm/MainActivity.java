@@ -12,6 +12,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private TimePicker timePicker;
     private EditText editText;
     private Button manageButton;
+    private Button resetButton;
     private Spinner spinner;
+    SQLiteDatabase alarmList;
     String[] items = {"일요일","월요일", "화요일", "수요일", "목요일", "금요일", "토요일"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initDatabase();
+        alarmList = dbHelper.getReadableDatabase();
 //        channelID = new ArrayList<String>();
 //        requestCode = new ArrayList<Integer>();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -59,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(manageIntent);
             }
         });
+        resetButton = findViewById(R.id.resetButton);
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetAlarm();
+            }
+        });
+
         setTitle("박성규 맞춤 알람");
         Button alarm = findViewById(R.id.alarm);
         spinner = findViewById(R.id.spinner);
@@ -90,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new ContactDBHelper(this);
     }
     private void insertDatabase(String contentTitle, String content, int time){
-        SQLiteDatabase alarmList = dbHelper.getReadableDatabase();
         //('CONTENT_TITLE', 'CONTENT', TIME')
         String sqlInsert = ContactDBCtrict.SQL_INSERT+"("+"'"+contentTitle+"', '"+content+"', "+time+")";
         alarmList.execSQL(sqlInsert);
@@ -141,5 +152,20 @@ public class MainActivity extends AppCompatActivity {
         calendar.set(Calendar.DAY_OF_WEEK,getDayOfWeek);
 
         return calendar;
+    }
+
+    private void resetAlarm(){
+        Cursor cursor = alarmList.rawQuery(ContactDBCtrict.SQL_SELECT, null);
+        while(cursor.moveToNext()){
+            Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+
+            receiverIntent.putExtra("contentTitle", cursor.getString(0));
+            receiverIntent.putExtra("contentText", cursor.getString(1));
+            receiverIntent.putExtra("time", cursor.getInt(2));
+//            receiverIntent.putExtra("dayOfWeek", calendar.get(Calendar.DAY_OF_WEEK));
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, cursor.getInt(2)+cursor.getString(1).hashCode(), receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, cursor.getInt(2),1000*60*10,pendingIntent);
+        }
     }
 }
