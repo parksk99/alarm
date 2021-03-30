@@ -101,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
     private void initDatabase(){
         dbHelper = new ContactDBHelper(this);
     }
-    private void insertDatabase(String contentTitle, String content, int time){
+    private void insertDatabase(String contentTitle, String content, int time, String day){
         //('CONTENT_TITLE', 'CONTENT', TIME')
-        String sqlInsert = ContactDBCtrict.SQL_INSERT+"("+"'"+contentTitle+"', '"+content+"', "+time+")";
+        String sqlInsert = ContactDBCtrict.SQL_INSERT+"("+"'"+contentTitle+"', '"+content+"', "+time+", '"+day+"')";
         alarmList.execSQL(sqlInsert);
     }
     private void setAlarm(Calendar calendar) {
@@ -113,14 +113,14 @@ public class MainActivity extends AppCompatActivity {
         int time = (int)calendar.getTimeInMillis();
         Intent receiverIntent = new Intent(MainActivity.this, AlarmReceiver.class);
 
-        insertDatabase(contentTitle, content, time);
+        insertDatabase(contentTitle, content, time, items[calendar.get(Calendar.DAY_OF_WEEK)-1]);
         receiverIntent.putExtra("contentTitle", contentTitle);
         receiverIntent.putExtra("contentText", content);
         receiverIntent.putExtra("time",(int)calendar.getTimeInMillis());
         receiverIntent.putExtra("dayOfWeek", calendar.get(Calendar.DAY_OF_WEEK));
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, time+content.hashCode(), receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),1000*60*10/*AlarmManager.INTERVAL_DAY*7*/, pendingIntent); //알림 반복 설정 : 세번째 인자가 반복 주기
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY*7, pendingIntent); //알림 반복 설정 : 세번째 인자가 반복 주기
     }
     //timePicker에 저장된 시간을 가져옴
     private Calendar getTime() {
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 //            receiverIntent.putExtra("dayOfWeek", calendar.get(Calendar.DAY_OF_WEEK));
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, cursor.getInt(2)+cursor.getString(1).hashCode(), receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT); //마지막 인자 : receiverIntent의 Extras 값을 최신으로 유지하게 함
-            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, cursor.getInt(2),1000*60*10,pendingIntent);
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, cursor.getInt(2),AlarmManager.INTERVAL_DAY*7,pendingIntent);
         }
     }
 }

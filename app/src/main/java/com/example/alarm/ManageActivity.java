@@ -18,11 +18,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class ManageActivity extends AppCompatActivity{
-//    Button button;
     ContactDBHelper dbHelper;
     ArrayList<TextView> textViewArrayList;
+    ArrayList<TextView> contentArrayList;
     ArrayList<Button> buttonList;
-//    TextView textView;
     LinearLayout linearLayout;
     ArrayList<LinearLayout> linearLayoutList;
     SQLiteDatabase alarmDatabase;
@@ -31,10 +30,11 @@ public class ManageActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage);
+        setTitle("Manage Alarm");
         linearLayout = (LinearLayout)findViewById(R.id.manage_layout);
 
         alarmDatabase = this.openOrCreateDatabase("contact.db", MODE_PRIVATE, null);
-        textViewArrayList = setTextView();
+        initView();
         dbHelper = new ContactDBHelper(this);
        // button = findViewById(R.id.button);
 
@@ -96,8 +96,9 @@ public class ManageActivity extends AppCompatActivity{
     }
 
     //textView에 db내용을 표시함
-    private ArrayList<TextView> setTextView(){
+    private void initView(){
         textViewArrayList = new ArrayList<>();
+        contentArrayList = new ArrayList<>();
         int count = getCount();
         linearLayoutList = new ArrayList<>();
         buttonList = new ArrayList<>();
@@ -106,10 +107,14 @@ public class ManageActivity extends AppCompatActivity{
             linearLayoutList.add(new LinearLayout(this));
             buttonList.add(new Button(this));
             textViewArrayList.add(new TextView(this));
+            contentArrayList.add(new TextView(this));
+
             if(cursor.moveToNext()){
                 linearLayoutList.get(i).setOrientation(LinearLayout.HORIZONTAL);
+                linearLayoutList.get(i).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
                 textViewArrayList.get(i).setText(cursor.getString(0)/* + "\n"+cursor.getString(1)*/);
+                contentArrayList.get(i).setText(" "+cursor.getString(3)+" : "+cursor.getString(1));
 
                 buttonList.get(i).setText("삭제");
                 buttonList.get(i).setTag(i);
@@ -117,20 +122,23 @@ public class ManageActivity extends AppCompatActivity{
             }
             else{
                 textViewArrayList.get(i).setText("There is no alarm");
-                return null;
+                linearLayout.addView(textViewArrayList.get(i));
+                return ;
             }
 
 
             LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             textViewArrayList.get(i).setLayoutParams(parms);
+            contentArrayList.get(i).setLayoutParams(parms);
             buttonList.get(i).setLayoutParams(parms);
 //            textViewArrayList.get(i).setTag(i);
 
             linearLayoutList.get(i).addView(textViewArrayList.get(i));
+            linearLayoutList.get(i).addView(contentArrayList.get(i));
             linearLayoutList.get(i).addView(buttonList.get(i));
             linearLayout.addView(linearLayoutList.get(i));
         }
-        return textViewArrayList;
+        return ;
     }
 
     //db에서 원하는 time과 content를 가져와서 requestCode를 조합함
